@@ -1,0 +1,9 @@
+Package: com.saihgupr.remotecompanioncn
+Name: RemoteCompanion CN (Externalized)
+Version: 440
+Architecture: iphoneos-arm64
+Description: RemoteCompanion 4.4.0 外挂汉化：1012 条精确映射 + 107 条动态正则 + Web UI 中文版。运行时注入翻译，不改动原包文件。
+Depends: mobilesubstrate
+Maintainer: 777qwq
+Author: 777qwq
+Section: Localization

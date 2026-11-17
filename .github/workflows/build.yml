@@ -1,0 +1,47 @@
+name: Build RemoteCompanionCN
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Theos
+        uses: actions/cache@v4
+        with:
+          path: ~/theos
+          key: theos-${{ runner.os }}-16.5
+
+      - name: Install Theos
+        run: |
+          if [ ! -d ~/theos ]; then
+            git clone --recursive https://github.com/theos/theos.git ~/theos
+          fi
+          curl -fsSL -o /tmp/sdk.deb https://github.com/theos/sdks/raw/master/iPhoneOS16.5.sdk.tar.xz || true
+          if [ -f /tmp/sdk.deb ]; then tar -xf /tmp/sdk.deb -C ~/theos/sdks; fi
+          ls ~/theos/sdks
+
+      - name: Build
+        env:
+          THEOS: /home/runner/theos
+        run: |
+          cd cn3
+          make package FINALPACKAGE=1
+          find . -name "*.deb" -exec cp {} .. \;
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RemoteCompanionCN-deb
+          path: "*.deb"
+
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "*.deb"
