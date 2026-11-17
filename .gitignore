@@ -1,3 +1,5 @@
 packages/
 *.deb
 .theos/
+!releases/
+!releases/*.deb
