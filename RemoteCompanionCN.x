@@ -277,9 +277,7 @@ static void RCCNInit(void) {
         @"x y ms  (e.g. 195 422 800)" : @"x y \u6beb\u79d2\uff08\u5982 195 422 800\uff09",
         @"x1 y1 x2 y2  (e.g. 195 700 195 200)" : @"x1 y1 x2 y2\uff08\u5982 195 700 195 200\uff09",
         @"192.168.1.50 or broker.local" : @"\u5982 192.168.1.50 \u6216 broker.local",
-        @"TAP SCREEN NOW
-to record coordinates" : @"\u73b0\u5728\u70b9\u51fb\u5c4f\u5e55
-\u4ee5\u5f55\u5236\u5750\u6807",
+        @"TAP SCREEN NOW\nto record coordinates" : @"\u73b0\u5728\u70b9\u51fb\u5c4f\u5e55\n\u4ee5\u5f55\u5236\u5750\u6807",
         @"Recording tap in 1..." : @"1 \u79d2\u540e\u5f55\u5236\u70b9\u51fb\u2026",
         @"Recording tap in 2..." : @"2 \u79d2\u540e\u5f55\u5236\u70b9\u51fb\u2026",
         @"Recording tap in 3..." : @"3 \u79d2\u540e\u5f55\u5236\u70b9\u51fb\u2026",
@@ -1055,7 +1053,7 @@ to record coordinates" : @"\u73b0\u5728\u70b9\u51fb\u5c4f\u5e55
     } copy];
     NSMutableDictionary *low = [NSMutableDictionary dictionary];
     for (NSString *k in RCCNExact) low[[k lowercaseString]] = RCCNExact[k];
-    RCCNLower = low copy;
+    RCCNLower = [low copy];
     NSMutableArray *arr = [NSMutableArray array];
     [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^Recording tap in (\\d+)\\.\\.\\.$" options:0 error:nil], @[@"{0} \u79d2\u540e\u5f55\u5236\u70b9\u51fb\u2026"] ]];
     [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^Connected to MQTT broker \\((.+):(\\d+)\\) successfully!$" options:0 error:nil], @[@"\u5df2\u8fde\u63a5 MQTT \u670d\u52a1\u5668\uff08{0}:{1}\uff09\uff01"] ]];
@@ -1105,9 +1103,7 @@ to record coordinates" : @"\u73b0\u5728\u70b9\u51fb\u5c4f\u5e55
     [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^Could not resolve host '(.+)'$" options:0 error:nil], @[@"\u65e0\u6cd5\u89e3\u6790\u4e3b\u673a\u300c{0}\u300d"] ]];
     [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^last ([0-9.]+), ([0-9.]+)$" options:0 error:nil], @[@"\u4e0a\u6b21 {0}, {1}"] ]];
     [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^Tap Target \\((\\d+)\\)$" options:0 error:nil], @[@"\u70b9\u51fb\u76ee\u6807\uff08{0}\uff09"] ]];
-    [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^RemoteCompanion Tap Test\\nhits (\\d+)\\n(.*)$" options:0 error:nil], @[@"RemoteCompanion \u70b9\u51fb\u6d4b\u8bd5
-\u547d\u4e2d {0}
-{1}"] ]];
+    [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^RemoteCompanion Tap Test\\nhits (\\d+)\\n(.*)$" options:0 error:nil], @[@"RemoteCompanion \u70b9\u51fb\u6d4b\u8bd5\n\u547d\u4e2d {0}\n{1}"] ]];
     [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^Paste\\ (.+)$" options:0 error:nil], @[@"{0}"] ]];
     [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^(.+)\\ Selected$" options:0 error:nil], @[@"{0}"] ]];
     [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^Delete\\ (.+)\\?$" options:0 error:nil], @[@"{0}"] ]];
@@ -1162,17 +1158,16 @@ to record coordinates" : @"\u73b0\u5728\u70b9\u51fb\u5c4f\u5e55
     [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^Failed\\ to\\ write\\ to:\\\\n(.+)\\\\n\\\\nError:\\ (.+)$" options:0 error:nil], @[@"{0}{1}"] ]];
     [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^Forgotten\\ in\\ (\\d+)\\ minutes$" options:0 error:nil], @[@"{0}"] ]];
     [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^Button\\ triggers\\ paused\\ until\\ (.+)$" options:0 error:nil], @[@"{0}"] ]];
-    [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^(.+)\\n(.+) passed, (.+) failed, (.+) skipped$" options:0 error:nil], @[@"{0}
-\u901a\u8fc7 {1}\uff0c\u5931\u8d25 {2}\uff0c\u8df3\u8fc7 {3}"] ]];
+    [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^(.+)\\n(.+) passed, (.+) failed, (.+) skipped$" options:0 error:nil], @[@"{0}\n\u901a\u8fc7 {1}\uff0c\u5931\u8d25 {2}\uff0c\u8df3\u8fc7 {3}"] ]];
     [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^([0-9.]+) s \\u2013 ([0-9.]+) s \\u00B7 ([0-9.]+) s long$" options:0 error:nil], @[@"{0}\u2013{1} \u79d2 \u00b7 \u5171 {2} \u79d2"] ]];
     [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^(\\d+) (.+), ([0-9.]+) s$" options:0 error:nil], @[@"{0} \u4e2a{1}\uff0c{2} \u79d2"] ]];
     [arr addObject:@[ [[NSRegularExpression alloc] initWithPattern:@"^Recording tap in (\\d+) ms$" options:0 error:nil], @[@"{0} \u6beb\u79d2\u540e\u5f55\u5236\u70b9\u51fb\u2026"] ]];
-    RCCNRegex = arr copy;
+    RCCNRegex = [arr copy];
 }
 
 
 %hook UILabel
-- ((void)setText:(NSString *)text ) {
+- (void)setText:(NSString *)text  {
     %orig(RCCNTranslate(text));
 }
 - (void)setAttributedText:(NSAttributedString *)text {
@@ -1188,16 +1183,16 @@ to record coordinates" : @"\u73b0\u5728\u70b9\u51fb\u5c4f\u5e55
 %end
 
 %hook UITextField
-- ((void)setPlaceholder:(NSString *)p ) {
+- (void)setPlaceholder:(NSString *)p  {
     %orig(RCCNTranslate(p));
 }
-- ((void)setText:(NSString *)text ) {
+- (void)setText:(NSString *)text  {
     %orig(RCCNTranslate(text));
 }
 %end
 
 %hook UIButton
-- ((void)setTitle:(NSString *)title forState:(UIControlState)state ) {
+- (void)setTitle:(NSString *)title forState:(UIControlState)state  {
     %orig(RCCNTranslate(title), state);
 }
 %end
@@ -1206,7 +1201,7 @@ to record coordinates" : @"\u73b0\u5728\u70b9\u51fb\u5c4f\u5e55
 - (instancetype)initWithTitle:(NSString *)title style:(UIBarButtonItemStyle)style target:(id)target action:(SEL)action {
     return %orig(RCCNTranslate(title), style, target, action);
 }
-- ((void)setTitle:(NSString *)title ) {
+- (void)setTitle:(NSString *)title  {
     %orig(RCCNTranslate(title));
 }
 %end
@@ -1215,10 +1210,10 @@ to record coordinates" : @"\u73b0\u5728\u70b9\u51fb\u5c4f\u5e55
 - (instancetype)initWithTitle:(NSString *)title message:(NSString *)message preferredStyle:(UIAlertControllerStyle)style {
     return %orig(RCCNTranslate(title), RCCNTranslate(message), style);
 }
-- ((void)setTitle:(NSString *)title ) {
+- (void)setTitle:(NSString *)title  {
     %orig(RCCNTranslate(title));
 }
-- ((void)setMessage:(NSString *)message ) {
+- (void)setMessage:(NSString *)message  {
     %orig(RCCNTranslate(message));
 }
 %end
@@ -1227,7 +1222,7 @@ to record coordinates" : @"\u73b0\u5728\u70b9\u51fb\u5c4f\u5e55
 - (instancetype)initWithTitle:(NSString *)title style:(UIAlertActionStyle)style handler:(void (^)(UIAlertAction *))handler {
     return %orig(RCCNTranslate(title), style, handler);
 }
-- ((void)setTitle:(NSString *)title ) {
+- (void)setTitle:(NSString *)title  {
     %orig(RCCNTranslate(title));
 }
 %end
@@ -1239,10 +1234,10 @@ to record coordinates" : @"\u73b0\u5728\u70b9\u51fb\u5c4f\u5e55
 %end
 
 %hook UIListContentConfiguration
-- ((void)setText:(NSString *)text ) {
+- (void)setText:(NSString *)text  {
     %orig(RCCNTranslate(text));
 }
-- ((void)setSecondaryText:(NSString *)text ) {
+- (void)setSecondaryText:(NSString *)text  {
     %orig(RCCNTranslate(text));
 }
 %end
