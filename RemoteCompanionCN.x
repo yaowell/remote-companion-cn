@@ -1175,7 +1175,7 @@ static void RCCNInit(void) {
     if (text) {
         NSString *tr = RCCNTranslate(text.string);
         if (![tr isEqualToString:text.string]) {
-            fixed = [[NSAttributedString alloc] initWithString:tr attributes:text.attributes];
+            fixed = [[NSAttributedString alloc] initWithString:tr attributes:[text attributesAtIndex:0 effectiveRange:NULL]];
         }
     }
     %orig(fixed);
