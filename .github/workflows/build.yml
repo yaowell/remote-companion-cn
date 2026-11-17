@@ -1,47 +1,61 @@
-name: Build RemoteCompanionCN
+name: build
+
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
     tags: [ 'v*' ]
-  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Theos
-        uses: actions/cache@v4
-        with:
-          path: ~/theos
-          key: theos-${{ runner.os }}-16.5
-
-      - name: Install Theos
+      - name: Install dependencies
         run: |
-          if [ ! -d ~/theos ]; then
-            git clone --recursive https://github.com/theos/theos.git ~/theos
-          fi
-          git clone --depth 1 --filter=blob:none --sparse https://github.com/theos/sdks.git /tmp/sdks
-          cd /tmp/sdks && git sparse-checkout set iPhoneOS16.5.sdk
-          cp -r /tmp/sdks/iPhoneOS16.5.sdk ~/theos/sdks/
-          ls ~/theos/sdks
+          brew install ldid dpkg xz make
+          echo "$(brew --prefix make)/libexec/gnubin" >> "$GITHUB_PATH"
 
-      - name: Build
-        env:
-          THEOS: /home/runner/theos
+      - name: Prepare Theos
         run: |
-          make package FINALPACKAGE=1
-          find . -name "*.deb" -exec cp {} .. \;
+          set -euo pipefail
+          export THEOS="$HOME/theos"
+          git clone --recursive --depth=1 https://github.com/theos/theos.git "$THEOS"
+          git clone --depth=1 --filter=blob:none --sparse https://github.com/theos/sdks.git /tmp/sdks
+          ( cd /tmp/sdks && git sparse-checkout set iPhoneOS16.5.sdk )
+          mkdir -p "$THEOS/sdks"
+          cp -R /tmp/sdks/iPhoneOS16.5.sdk "$THEOS/sdks/"
+          echo "THEOS=$THEOS" >> "$GITHUB_ENV"
+          echo "$THEOS/bin" >> "$GITHUB_PATH"
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - name: Build (rootless)
+        run: make package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+
+      - name: Verify slices
+        run: |
+          set -uo pipefail
+          STAGE=.theos/_/var/jb
+          fail=0
+          for f in "$STAGE"/Library/MobileSubstrate/DynamicLibraries/*.dylib; do
+            echo "== $f"
+            lipo -info "$f"
+            archs=$(lipo -archs "$f")
+            case "$archs" in
+              *arm64e*) ;;
+              *) echo "::error file=$f::missing arm64e slice"; fail=1 ;;
+            esac
+          done
+          exit $fail
+
+      - uses: actions/upload-artifact@v4
         with:
-          name: RemoteCompanionCN-deb
-          path: "*.deb"
+          name: remote-companion-cn-deb
+          path: packages/*.deb
+          if-no-files-found: error
 
       - name: Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: "*.deb"
+          files: packages/*.deb
