@@ -1,0 +1,6 @@
+#!/bin/bash
+# 用汉化 WebUI 覆盖本体原版（不抢文件所有权，本体升级回英文则重装本包恢复）
+TGT="/var/jb/Library/Application Support/RemoteCompanion/rc_webui.html"
+SRC="/var/jb/Library/Application Support/RemoteCompanionCN/rc_webui.html"
+if [ -f "$TGT" ]; then cp -f "$SRC" "$TGT"; fi
+exit 0
