@@ -22,15 +22,15 @@ jobs:
           if [ ! -d ~/theos ]; then
             git clone --recursive https://github.com/theos/theos.git ~/theos
           fi
-          curl -fsSL -o /tmp/sdk.deb https://github.com/theos/sdks/raw/master/iPhoneOS16.5.sdk.tar.xz || true
-          if [ -f /tmp/sdk.deb ]; then tar -xf /tmp/sdk.deb -C ~/theos/sdks; fi
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/theos/sdks.git /tmp/sdks
+          cd /tmp/sdks && git sparse-checkout set iPhoneOS16.5.sdk
+          cp -r /tmp/sdks/iPhoneOS16.5.sdk ~/theos/sdks/
           ls ~/theos/sdks
 
       - name: Build
         env:
           THEOS: /home/runner/theos
         run: |
-          cd cn3
           make package FINALPACKAGE=1
           find . -name "*.deb" -exec cp {} .. \;
 
